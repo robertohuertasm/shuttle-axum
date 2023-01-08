@@ -1,0 +1,14 @@
+{
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "server": "localhost",
+      "port": 15374,
+      "driver": "PostgreSQL",
+      "name": "localhost -shuttle",
+      "group": "shuttle",
+      "database": "postgres",
+      "username": "postgres"
+    }
+  ]
+}
