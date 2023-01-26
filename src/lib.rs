@@ -81,7 +81,7 @@ async fn router(pool: PgPool) -> Router {
         .with_state(pool)
 }
 
-async fn shuttle_wrapper(
+async fn main(
     factory: &mut dyn shuttle_service::Factory,
     runtime: &shuttle_service::Runtime,
     logger: shuttle_service::Logger,
@@ -149,7 +149,7 @@ async fn shuttle_wrapper(
 #[no_mangle]
 pub extern "C" fn _create_service() -> *mut shuttle_service::Bootstrapper {
     let bootstrapper = shuttle_service::Bootstrapper::new(
-        |factory, runtime, logger| Box::pin(shuttle_wrapper(factory, runtime, logger)),
+        |factory, runtime, logger| Box::pin(main(factory, runtime, logger)),
         |srv, addr, runtime| {
             runtime.spawn(async move {
                 srv.bind(addr)
