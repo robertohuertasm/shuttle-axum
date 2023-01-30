@@ -6,8 +6,13 @@ use axum::{
     routing::{delete, get},
     Json, Router,
 };
+use dd_tracing_layer::DatadogOptions;
 use serde::{Deserialize, Serialize};
-use shuttle_service::{error::CustomError, tracing, Context};
+use shuttle_service::{
+    error::CustomError,
+    tracing::{self, instrument},
+    Context,
+};
 use sqlx::{Executor, FromRow, PgPool};
 use sync_wrapper::SyncWrapper;
 
@@ -25,11 +30,13 @@ where
 {
     move |error: E| (status_code, error.to_string())
 }
-
+#[instrument]
 async fn root() -> &'static str {
+    tracing::info!("Saying hello");
     "Hello Axum! Shuttle rocks!"
 }
 
+#[instrument(skip(db))]
 async fn create_test(
     State(db): State<PgPool>,
     Json(txt): Json<String>,
@@ -43,6 +50,7 @@ async fn create_test(
     Ok(Json(test))
 }
 
+#[instrument(skip(db))]
 async fn delete_test(
     State(db): State<PgPool>,
     Path(id): Path<i32>,
@@ -55,6 +63,7 @@ async fn delete_test(
     Ok(Json(test))
 }
 
+#[instrument(skip(db))]
 async fn list_tests(State(db): State<PgPool>) -> Result<Json<Vec<Test>>, AppError> {
     let tests = sqlx::query_as::<_, Test>("SELECT * FROM test")
         .fetch_all(&db)
@@ -63,6 +72,7 @@ async fn list_tests(State(db): State<PgPool>) -> Result<Json<Vec<Test>>, AppErro
     Ok(Json(tests))
 }
 
+#[instrument(skip(pool))]
 async fn axum(pool: PgPool) -> shuttle_service::ShuttleAxum {
     pool.execute(include_str!("../db/schema.sql"))
         .await
@@ -89,6 +99,11 @@ async fn main(
     use shuttle_service::tracing_subscriber::prelude::*;
     use shuttle_service::ResourceBuilder;
 
+    let dd = dd_tracing_layer::create(DatadogOptions::new(
+        "shuttle-axum",
+        "21695c1b35156511441c0d3ace5943f4",
+    ));
+
     // set tracing
     runtime
         .spawn_blocking(move || {
@@ -98,6 +113,7 @@ async fn main(
                     .unwrap();
             shuttle_service::tracing_subscriber::registry()
                 .with(filter_layer)
+                .with(dd)
                 .with(logger)
                 .init();
         })
