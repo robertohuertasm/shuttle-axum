@@ -79,7 +79,7 @@ async fn axum(pool: PgPool) -> shuttle_service::ShuttleAxum {
         .map_err(CustomError::new)?;
     let router = router(pool).await;
     let sync_wrapper = SyncWrapper::new(router);
-    tracing::debug!("Starting axum server");
+    tracing::info!("Starting axum server");
     Ok(sync_wrapper)
 }
 
@@ -100,7 +100,7 @@ async fn main(
     use shuttle_service::ResourceBuilder;
 
     let dd = dd_tracing_layer::create(DatadogOptions::new(
-        "shuttle-axum",
+        "shuttle-axum-2023",
         "21695c1b35156511441c0d3ace5943f4",
     ));
 
@@ -109,7 +109,7 @@ async fn main(
         .spawn_blocking(move || {
             let filter_layer =
                 shuttle_service::tracing_subscriber::EnvFilter::try_from_default_env()
-                    .or_else(|_| shuttle_service::tracing_subscriber::EnvFilter::try_new("DEBUG"))
+                    .or_else(|_| shuttle_service::tracing_subscriber::EnvFilter::try_new("INFO"))
                     .unwrap();
             shuttle_service::tracing_subscriber::registry()
                 .with(filter_layer)

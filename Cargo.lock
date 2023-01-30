@@ -355,14 +355,13 @@ dependencies = [
 
 [[package]]
 name = "dd-tracing-layer"
-version = "0.1.1"
+version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "023938bd68a3fe75e15e3d72dc4fa6ae8079686c035b22d5aceb6874d509ea45"
+checksum = "4792f7d09ed90695e2a8031ceb66c2eb8d0ac905d2fd6b4895139841dcf93d68"
 dependencies = [
  "async-recursion",
  "async-trait",
  "chrono",
- "log",
  "log-tracing-layer",
  "reqwest",
  "serde_json",
@@ -882,9 +881,9 @@ dependencies = [
 
 [[package]]
 name = "log-tracing-layer"
-version = "0.1.1"
+version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d5acdaad6784cffd6f05b4e5a812fee7b7fab6bca32cebba93d5ce75d3e8f385"
+checksum = "9c58fd5016a64c7cc3095246272c35025e8c8127f79d7cf58f722cc5f5a3ee43"
 dependencies = [
  "async-trait",
  "chrono",
