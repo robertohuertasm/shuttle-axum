@@ -355,9 +355,9 @@ dependencies = [
 
 [[package]]
 name = "dd-tracing-layer"
-version = "0.1.0"
+version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4fc77dd9f640d0fedc3284256c9992b392c346a129b39b44c070f379b24e95d4"
+checksum = "023938bd68a3fe75e15e3d72dc4fa6ae8079686c035b22d5aceb6874d509ea45"
 dependencies = [
  "async-recursion",
  "async-trait",
