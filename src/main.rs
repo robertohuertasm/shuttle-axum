@@ -7,9 +7,8 @@ use axum::{
     Json, Router,
 };
 use serde::{Deserialize, Serialize};
-use shuttle_service::{error::CustomError, tracing};
+use shuttle_runtime::{tracing, CustomError};
 use sqlx::{Executor, FromRow, PgPool};
-use sync_wrapper::SyncWrapper;
 
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 struct Test {
@@ -63,15 +62,14 @@ async fn list_tests(State(db): State<PgPool>) -> Result<Json<Vec<Test>>, AppErro
     Ok(Json(tests))
 }
 
-#[shuttle_service::main]
-async fn axum(#[shuttle_shared_db::Postgres] pool: PgPool) -> shuttle_service::ShuttleAxum {
+#[shuttle_runtime::main]
+async fn axum(#[shuttle_shared_db::Postgres] pool: PgPool) -> shuttle_axum::ShuttleAxum {
     pool.execute(include_str!("../db/schema.sql"))
         .await
         .map_err(CustomError::new)?;
     let router = router(pool).await;
-    let sync_wrapper = SyncWrapper::new(router);
     tracing::info!("Starting axum server");
-    Ok(sync_wrapper)
+    Ok(router.into())
 }
 
 async fn router(pool: PgPool) -> Router {
